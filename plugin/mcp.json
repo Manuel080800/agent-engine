@@ -8,10 +8,6 @@
         "${PLUGIN_ROOT}/scripts/bridge.py",
         "mcp"
       ]
-    },
-    "agent-engine": {
-      "type": "http",
-      "url": "https://localhost:8443/api/mcp"
     }
   }
 }

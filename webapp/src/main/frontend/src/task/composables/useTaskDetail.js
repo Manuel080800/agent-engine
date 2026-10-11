@@ -1,3 +1,4 @@
+import { confirmAction } from "../../common/composables/useConfirmation.js";
 import { t } from "../../common/i18n/I18n.js";
 import { computed, ref, watch } from "vue";
 import { tasks } from "../services/tasks.js";
@@ -59,11 +60,14 @@ export function useTaskDetail(task, changed) {
     }
   }
 
-  function approve() {
+  async function approve() {
+    if (!(await confirmAction("confirm.approvePlan", { name: currentTask.value.data.name })))
+      return;
     return action(() => tasks.approve(currentTask.value));
   }
 
-  function verify(data) {
+  async function verify(data) {
+    if (!(await confirmAction("confirm.verify", { model: data.modelId }))) return;
     return action(() => tasks.consent(currentTask.value, data));
   }
 

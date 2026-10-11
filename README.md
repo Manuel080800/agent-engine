@@ -8,16 +8,15 @@ La [arquitectura](docs/architecture.md) describe las capas. Las interfaces y sus
 
 ## Desplegar el servidor
 
-Requiere Docker Compose. Generar los secretos privados y levantar los dos contenedores:
+Requiere Docker Compose y configuración externa del entorno: `ENGINE_ISSUER` (URL HTTPS de la API), `ENGINE_SECRETS_DIR` (directorio absoluto de secretos), `HTTPS_BIND_ADDRESS` y `HTTPS_PORT`. El directorio debe contener `spring.datasource.password`, `engine.bootstrap-token`, `tls.password` y `server.p12`, con el certificado correspondiente al dominio del entorno.
 
 ```sh
-python3 scripts/init_secrets.py
 docker compose up --build -d
 ```
 
 `compose.yml` define los servicios PostgreSQL y WildFly, sus redes, volúmenes y secretos. Para construir la imagen de WildFly utiliza `infra/docker/Dockerfile`, que compila el frontend y los módulos Java y despliega los dos WAR. `infra/docker/entrypoint.sh` prepara los secretos al arrancar; `infra/wildfly/configure.cli` configura HTTPS. Hay un único archivo Compose.
 
-El panel se publica en `https://localhost:8443/`, la API en `/api/v1` y MCP en `/api/mcp`. El certificado inicial es local y requiere confianza explícita en el cliente. El registro del primer administrador usa el token privado de `.local/secrets/engine.bootstrap-token`, con un plazo de 15 minutos desde la inicialización de la base de datos. Los usuarios posteriores requieren una invitación administrativa.
+El panel se publica en la raíz del dominio configurado, la API en `/api/v1` y MCP en `/api/mcp`. El registro del primer administrador usa el secreto externo `engine.bootstrap-token`, con un plazo de 15 minutos desde la inicialización de la base de datos. Los usuarios posteriores requieren una invitación administrativa. La conexión MCP HTTP del plugin queda pendiente de configurar con la URL del entorno.
 
 La compilación Java requiere JDK 21, Maven y Node.js para el panel; el Dockerfile incluye estas herramientas. El reactor genera `core/target/agent-engine-core-1.0.0-SNAPSHOT.jar`, `api/target/api.war` y `webapp/target/ROOT.war`.
 

@@ -1,3 +1,4 @@
+import { confirmAction } from "./useConfirmation.js";
 import { t } from "../i18n/I18n.js";
 import { computed, ref, watch } from "vue";
 import { catalog } from "../config/ResourceCatalog.js";
@@ -96,12 +97,19 @@ export function useResourceWorkspace() {
     }
   }
 
-  function edit(row = null) {
+  async function edit(row = null) {
+    if (row && !(await confirmAction("confirm.edit", { name: row.data.name || row.id }))) return;
     record.value = row;
     editing.value = true;
   }
 
   async function save(data) {
+    if (
+      !(await confirmAction(record.value ? "confirm.update" : "confirm.create", {
+        name: data.name || t(schema.value.label),
+      }))
+    )
+      return;
     await run(async () => {
       await resources.save(
         kind.value,
@@ -115,12 +123,20 @@ export function useResourceWorkspace() {
   }
 
   async function remove(row) {
-    if (window.confirm(t("notice.delete", { name: row.data.name || row.id }))) {
+    if (await confirmAction("confirm.delete", { name: row.data.name || row.id }, true)) {
       await run(() => resources.remove(kind.value, row));
     }
   }
 
   async function decide(row, decision) {
+    if (
+      !(await confirmAction(
+        decision === "APPROVED" ? "confirm.approveMemory" : "confirm.rejectMemory",
+        { name: row.data.name || row.id },
+        decision === "REJECTED",
+      ))
+    )
+      return;
     const editedText =
       decision === "APPROVED" ? window.prompt(t("notice.memory"), row.data.text) : null;
 
@@ -132,6 +148,7 @@ export function useResourceWorkspace() {
   }
 
   async function invite() {
+    if (!(await confirmAction("confirm.invite"))) return;
     await run(async () => {
       const result = await invitation();
       notice.value = {
@@ -143,11 +160,20 @@ export function useResourceWorkspace() {
   }
 
   async function link() {
+    if (!(await confirmAction("confirm.link"))) return;
     await run(() => localClients.link());
   }
 
   async function revoke(row) {
+    if (!(await confirmAction("confirm.deactivate", { name: row.data.name || row.id }, true)))
+      return;
     await run(() => localClients.revoke(row));
+  }
+
+  async function deleteClient(row) {
+    if (!(await confirmAction("confirm.deleteClient", { name: row.data.name || row.id }, true)))
+      return;
+    await run(() => localClients.remove(row));
   }
 
   async function search() {
@@ -200,6 +226,7 @@ export function useResourceWorkspace() {
     invite,
     link,
     revoke,
+    deleteClient,
     search,
     changePage,
   };

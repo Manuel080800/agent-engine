@@ -69,6 +69,7 @@ const emit = defineEmits(["search", "invite"]);
       type="button"
       class="btn btn-outline-secondary invitation-button"
       :disabled="busy"
+      :title="t('help.invitation')"
       @click="emit('invite')"
     >
       {{ t("filter.invite") }}

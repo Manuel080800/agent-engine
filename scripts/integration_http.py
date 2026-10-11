@@ -2,8 +2,9 @@ import base64, hashlib, http.cookiejar, json, re, secrets, ssl, urllib.error, ur
 from pathlib import Path
 import os, time
 
-base = os.environ.get("AGENT_ENGINE_TEST_URL", "https://localhost:18443")
-tls = ssl.create_default_context(cafile=".local/secrets/server.crt")
+base = os.environ["AGENT_ENGINE_TEST_URL"].rstrip("/")
+bootstrap_token = Path(os.environ["AGENT_ENGINE_TEST_BOOTSTRAP_TOKEN_FILE"]).read_text()
+tls = ssl.create_default_context(cafile=os.environ.get("AGENT_ENGINE_TEST_CA_FILE"))
 jar = http.cookiejar.CookieJar()
 client = urllib.request.build_opener(
     urllib.request.HTTPSHandler(context=tls), urllib.request.HTTPCookieProcessor(jar)
@@ -77,32 +78,18 @@ while True:
         if time.monotonic() > deadline:
             raise
         time.sleep(1)
-account_file = Path(".local/http-test-account.json")
-if account_file.exists():
-    account = json.loads(account_file.read_text())
-    email = account["email"]
-    password = account["password"]
-    user = {"id": account["id"]}
-else:
-    email = "test-" + uuid.uuid4().hex + "@example.test"
-    password = secrets.token_urlsafe(24)
-    user = req(
-        "/api/v1/auth/bootstrap",
-        {
-            "email": email,
-            "password": password,
-            "token": Path(".local/secrets/engine.bootstrap-token").read_text(),
-        },
-    )
-    fd = os.open(account_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "w") as file:
-        json.dump({"email": email, "password": password, "id": user["id"]}, file)
+email = "test-" + uuid.uuid4().hex + "@example.test"
+password = secrets.token_urlsafe(24)
+user = req(
+    "/api/v1/auth/bootstrap",
+    {"email": email, "password": password, "token": bootstrap_token},
+)
 req(
     "/api/v1/auth/bootstrap",
     {
         "email": "other@example.test",
         "password": password,
-        "token": Path(".local/secrets/engine.bootstrap-token").read_text(),
+        "token": bootstrap_token,
     },
     expect=403,
 )

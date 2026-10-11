@@ -5,7 +5,7 @@ export const navigationGroups = [
   },
   {
     label: "nav.execution",
-    kinds: ["tasks", "plans", "blocks", "checkpoints", "reviews", "memory-proposals"],
+    kinds: ["tasks", "reviews", "memory-proposals"],
   },
   {
     label: "nav.administration",

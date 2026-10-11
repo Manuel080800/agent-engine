@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify V1-V6 domain renames in a disposable schema and always roll back."""
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -9,6 +10,9 @@ MIGRATIONS = ROOT / "core/src/main/resources/db/migration"
 
 
 def verify():
+    if not os.environ.get("PGHOST") or not os.environ.get("PGDATABASE"):
+        raise SystemExit("Set PGHOST and PGDATABASE for the test database")
+
     original = "\n".join(
         (MIGRATIONS / name).read_text()
         for name in ("V1__engine.sql", "V2__oauth.sql", "V3__sessions.sql")
@@ -86,18 +90,7 @@ ROLLBACK;
 """
     subprocess.run(
         [
-            "docker",
-            "compose",
-            "-p",
-            "agentengine-verify",
-            "exec",
-            "-T",
-            "database",
             "psql",
-            "-U",
-            "agentengine",
-            "-d",
-            "agentengine",
             "-v",
             "ON_ERROR_STOP=1",
             "-q",

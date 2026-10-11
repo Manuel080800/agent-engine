@@ -55,7 +55,7 @@ function submit(event) {
       />
       <fieldset
         class="registration-fields"
-        :disabled="busy || !csrf"
+        :disabled="!csrf"
       >
         <div>
           <label

@@ -2,6 +2,9 @@ package io.agentengine.core.auth.service;
 
 import io.agentengine.core.auth.record.LinkClientRequestRecord;
 import io.agentengine.core.auth.repository.dao.AuthDAO;
+import io.agentengine.core.auth.repository.LocalClientRepository;
+import io.agentengine.core.common.enums.DomainError;
+import io.agentengine.core.common.exception.DomainException;
 import io.agentengine.core.common.record.*;
 import io.agentengine.core.common.security.IdentitySecurity;
 import io.agentengine.core.common.service.ResourceService;
@@ -15,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class LocalClientServiceImpl implements LocalClientService {
     private final ResourceService resources;
     private final AuthDAO authDAO;
+    private final LocalClientRepository repository;
 
-    public LocalClientServiceImpl(ResourceService resources, AuthDAO authDAO) {
+    public LocalClientServiceImpl(ResourceService resources, AuthDAO authDAO, LocalClientRepository repository) {
         this.resources = resources;
         this.authDAO = authDAO;
+        this.repository = repository;
     }
 
     @Transactional
@@ -41,8 +46,33 @@ public class LocalClientServiceImpl implements LocalClientService {
     @Override
     public void revoke(UUID id, long version) {
         IdentitySecurity.human();
-        var resource = resources.get("local-clients", id, false);
+        var resource = resources.get("local-clients", id, true);
         resources.update("local-clients", id, new ResourceWriteRecord<>(null, version, Map.of("name", resource.data().get("name"), "clientId", resource.data().get("clientId"), "enabled", false)));
         authDAO.revokeAuthorizations(IdentitySecurity.owner(), resource.data().get("clientId").toString());
+    }
+
+    @Transactional
+    @Override
+    public void delete(UUID id, long version) {
+        IdentitySecurity.human();
+        var resource = resources.get("local-clients", id, true);
+
+        if (resource.version() != version) {
+            throw new DomainException(DomainError.CONFLICT, "Resource version conflict");
+        }
+
+        if (!Boolean.FALSE.equals(resource.data().get("enabled"))) {
+            throw new DomainException(DomainError.CONFLICT, "Client must be inactive before deletion");
+        }
+
+        var ownerId = IdentitySecurity.owner();
+        var clientId = resource.data().get("clientId").toString();
+
+        if (authDAO.hasClientRelations(ownerId, clientId)) {
+            throw new DomainException(DomainError.CONFLICT, "Client has related records");
+        }
+
+        repository.deleteById(id);
+        resources.audit("PURGE_local-clients", id);
     }
 }

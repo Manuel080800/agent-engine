@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { effectScope, nextTick, ref } from "vue";
+import { answerConfirmation, confirmation } from "../src/common/composables/useConfirmation.js";
 import { useResourceWorkspace } from "../src/common/composables/useResourceWorkspace.js";
 import { useTaskDetail } from "../src/task/composables/useTaskDetail.js";
 
@@ -101,7 +102,10 @@ test("task approval uses the fetched revision and refreshes the detail afterward
       detail.verificationModels.value.map((model) => model.modelId),
       ["custom-provider"],
     );
-    await detail.approve();
+    const approval = detail.approve();
+    assert.equal(confirmation.value.key, "confirm.approvePlan");
+    answerConfirmation(true);
+    await approval;
 
     assert.equal(approvedVersion, 3);
     assert.equal(detail.currentTask.value.version, 4);
@@ -126,6 +130,66 @@ test("an anonymous session opens the welcome panel without an error alert", asyn
     assert.equal(workspace.error.value, "");
     assert.equal(workspace.initializing.value, false);
   } finally {
+    scope.stop();
+    globalThis.fetch = previousFetch;
+  }
+});
+
+test("canceling a save preserves the editor without sending a mutation", async () => {
+  // Cancelar conserva el formulario y no envía cambios al servidor.
+  const scope = effectScope();
+  const previousFetch = globalThis.fetch;
+  let writes = 0;
+  globalThis.fetch = async (_url, options) => {
+    if (options?.method) writes += 1;
+    return response([]);
+  };
+  try {
+    const workspace = scope.run(() => useResourceWorkspace());
+    await workspace.edit();
+    const save = workspace.save({ name: "Example" });
+    assert.equal(confirmation.value.key, "confirm.create");
+    answerConfirmation(false);
+    await save;
+    assert.equal(writes, 0);
+    assert.equal(workspace.editing.value, true);
+    const acceptedSave = workspace.save({ name: "Example" });
+    answerConfirmation(true);
+    await acceptedSave;
+    assert.equal(writes, 1);
+    assert.equal(workspace.editing.value, false);
+  } finally {
+    answerConfirmation(false);
+    scope.stop();
+    globalThis.fetch = previousFetch;
+  }
+});
+
+test("canceling client deletion does not send a request", async () => {
+  // La confirmación distingue baja y eliminación definitiva y permite cancelar.
+  const scope = effectScope();
+  const previousFetch = globalThis.fetch;
+  let writes = 0;
+  globalThis.fetch = async () => {
+    writes += 1;
+    return response([]);
+  };
+  try {
+    const workspace = scope.run(() => useResourceWorkspace());
+    const row = { id: "client", version: 1, data: { name: "Local" } };
+    const deletion = workspace.deleteClient(row);
+    assert.equal(confirmation.value.key, "confirm.deleteClient");
+    assert.equal(confirmation.value.destructive, true);
+    answerConfirmation(false);
+    await deletion;
+    assert.equal(writes, 0);
+    const revoke = workspace.revoke(row);
+    assert.equal(confirmation.value.key, "confirm.deactivate");
+    answerConfirmation(false);
+    await revoke;
+    assert.equal(writes, 0);
+  } finally {
+    answerConfirmation(false);
     scope.stop();
     globalThis.fetch = previousFetch;
   }

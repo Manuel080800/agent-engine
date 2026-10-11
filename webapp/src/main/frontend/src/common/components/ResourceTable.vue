@@ -1,7 +1,7 @@
 <script setup>
 import { t, enumLabel, formatNumber, formatDate, displayValue, fieldLabel } from "../i18n/I18n.js";
 defineProps({ records: Array, schema: Object, loading: Boolean, busy: Boolean });
-const emit = defineEmits(["edit", "remove", "review", "decide", "revoke"]);
+const emit = defineEmits(["edit", "remove", "review", "decide", "revoke", "delete-client"]);
 
 function preview(row) {
   return (
@@ -14,6 +14,8 @@ function preview(row) {
 }
 
 function status(row) {
+  if (typeof row.data.enabled === "boolean")
+    return t(row.data.enabled ? "client.active" : "client.inactive");
   const field = ["state", "status", "scope", "role"].find(
     (key) => typeof row.data[key] === "string" && row.data[key],
   );
@@ -136,7 +138,16 @@ function status(row) {
                   :disabled="busy"
                   @click="emit('revoke', row)"
                 >
-                  {{ t("button.revoke") }}
+                  {{ t("button.deactivate") }}
+                </button>
+                <button
+                  v-if="schema.kind === 'local-clients'"
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  :disabled="busy"
+                  @click="emit('delete-client', row)"
+                >
+                  {{ t("button.deletePermanent") }}
                 </button>
               </div>
               <details

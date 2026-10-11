@@ -9,4 +9,6 @@ public interface LocalClientService {
     ResourceResponseRecord link(LinkClientRequestRecord request);
 
     void revoke(UUID id, long version);
+
+    void delete(UUID id, long version);
 }

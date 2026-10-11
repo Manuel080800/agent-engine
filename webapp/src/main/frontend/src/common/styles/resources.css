@@ -173,3 +173,25 @@
   overflow-wrap: anywhere;
   margin: 0;
 }
+
+.confirmation-dialog {
+  width: min(480px, calc(100% - 32px));
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  box-shadow: 0 24px 64px #172b4d33;
+}
+.confirmation-dialog::backdrop {
+  background: #172b4d88;
+}
+.confirmation-dialog h2 {
+  font-size: 20px;
+}
+.confirmation-dialog p {
+  margin: 16px 0 24px;
+  overflow-wrap: anywhere;
+}
+.confirmation-dialog .heading-actions {
+  justify-content: flex-end;
+}

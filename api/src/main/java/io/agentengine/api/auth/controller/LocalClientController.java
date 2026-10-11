@@ -28,4 +28,9 @@ public class LocalClientController {
     public void revoke(@PathVariable UUID id, @RequestParam long version) {
         service.revoke(id, version);
     }
+
+    @DeleteMapping("/{id}/permanent")
+    public void delete(@PathVariable UUID id, @RequestParam long version) {
+        service.delete(id, version);
+    }
 }

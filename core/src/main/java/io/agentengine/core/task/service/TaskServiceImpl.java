@@ -195,6 +195,7 @@ public class TaskServiceImpl implements TaskService {
             result.put("plan", resources.get("plans", reference(task.data(), "planId"), false));
         }
 
+        result.put("plans", children("plans", task));
         result.put("blocks", children("blocks", task));
         result.put("checkpoints", children("checkpoints", task));
 
@@ -272,6 +273,12 @@ public class TaskServiceImpl implements TaskService {
         var clientRows = resources.all("local-clients", null).stream().filter(r -> client.equals(r.data().get("clientId"))).toList();
 
         if (clientRows.isEmpty() || clientRows.stream().anyMatch(r -> Boolean.FALSE.equals(r.data().get("enabled")))) {
+            throw new DomainException(DomainError.FORBIDDEN, "Local client not linked or revoked");
+        }
+
+        var linkedClient = resources.get("local-clients", clientRows.getFirst().id(), true);
+
+        if (!Boolean.TRUE.equals(linkedClient.data().get("enabled"))) {
             throw new DomainException(DomainError.FORBIDDEN, "Local client not linked or revoked");
         }
 

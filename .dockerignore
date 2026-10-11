@@ -1,7 +1,5 @@
 .git
 .idea
-.local
-.maven-toolchain
 **/target
 **/node_modules
 **/__pycache__

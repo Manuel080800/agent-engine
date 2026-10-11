@@ -15,4 +15,6 @@ public interface AuthDAO {
     void consumeInvitation(UUID id);
 
     void revokeAuthorizations(UUID ownerId, String clientId);
+
+    boolean hasClientRelations(UUID ownerId, String clientId);
 }

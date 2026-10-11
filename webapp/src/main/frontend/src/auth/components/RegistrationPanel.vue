@@ -1,5 +1,6 @@
 <script setup>
 import { t, message } from "../../common/i18n/I18n.js";
+import { confirmAction } from "../../common/composables/useConfirmation.js";
 import { ref } from "vue";
 import { register } from "../services/session.js";
 
@@ -15,6 +16,8 @@ async function submit() {
   if (busy.value) {
     return;
   }
+
+  if (!(await confirmAction("confirm.register", { email: email.value }))) return;
 
   busy.value = true;
   error.value = "";

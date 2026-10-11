@@ -1,5 +1,7 @@
 <script setup>
 import { t, message } from "./common/i18n/I18n.js";
+import ConfirmationDialog from "./common/components/ConfirmationDialog.vue";
+import { confirmAction } from "./common/composables/useConfirmation.js";
 import { onMounted } from "vue";
 import { logout } from "./auth/services/session.js";
 import { useResourceWorkspace } from "./common/composables/useResourceWorkspace.js";
@@ -40,11 +42,13 @@ const {
   invite,
   link,
   revoke,
+  deleteClient,
   search,
   changePage,
 } = useResourceWorkspace();
 
 async function signOut() {
+  if (!(await confirmAction("confirm.logout"))) return;
   try {
     await logout();
   } catch (failure) {
@@ -63,6 +67,7 @@ if (loginPage) {
 
 <template>
   <div class="app-shell">
+    <ConfirmationDialog />
     <a
       class="skip-link"
       href="#main-content"
@@ -111,12 +116,12 @@ if (loginPage) {
               </p>
               <h1>{{ t(schema.label) }}</h1>
               <p class="page-description">
-                {{ t("app.description") }}
+                {{ t(`description.${kind}`) }}
               </p>
             </div>
             <div class="heading-actions">
               <button
-                v-if="schema.editable || schema.creatable"
+                v-if="!editing && !selectedTask && (schema.editable || schema.creatable)"
                 type="button"
                 class="btn btn-primary"
                 :disabled="busy"
@@ -151,11 +156,12 @@ if (loginPage) {
           </div>
 
           <ResourceToolbar
+            v-if="!editing && !selectedTask"
             v-model:project="project"
             v-model:query="query"
             :projects="projects"
             :busy="busy"
-            :administrator="user.administrator"
+            :administrator="user.administrator && kind === 'local-clients'"
             @search="search"
             @invite="invite"
           />
@@ -176,6 +182,7 @@ if (loginPage) {
             @changed="load"
           />
           <ResourceTable
+            v-if="!editing && !selectedTask"
             :records="records"
             :schema="schema"
             :loading="loading"
@@ -185,8 +192,10 @@ if (loginPage) {
             @review="selectedTask = $event"
             @decide="decide"
             @revoke="revoke"
+            @delete-client="deleteClient"
           />
           <ResourcePagination
+            v-if="!editing && !selectedTask"
             :offset="offset"
             :count="records.length"
             :page-size="pageSize"

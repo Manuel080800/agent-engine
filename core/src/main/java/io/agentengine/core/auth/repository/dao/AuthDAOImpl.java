@@ -50,6 +50,16 @@ public class AuthDAOImpl implements AuthDAO {
         jdbc.update(buildAuthorizationRevocationQuery(), buildAuthorizationParameters(ownerId, clientId));
     }
 
+    @Override
+    public boolean hasClientRelations(UUID ownerId, String clientId) {
+        var parameters = buildAuthorizationParameters(ownerId, clientId);
+        return Boolean.TRUE.equals(jdbc.queryForObject(buildClientRelationsQuery(), parameters, Boolean.class));
+    }
+
+    private String buildClientRelationsQuery() {
+        return "SELECT EXISTS (SELECT 1 FROM executionevent WHERE ownerid = CAST(:ownerId AS uuid) AND clientid = :clientId) OR EXISTS (SELECT 1 FROM checkpointsync sync JOIN task ON task.id = sync.taskid WHERE task.ownerid = CAST(:ownerId AS uuid) AND sync.clientid = :clientId) OR EXISTS (SELECT 1 FROM oauth2_authorization auth JOIN oauth2_registered_client client ON client.id = auth.registered_client_id WHERE auth.principal_name = :ownerId AND client.client_id = :clientId) OR EXISTS (SELECT 1 FROM oauth2_authorization_consent consent JOIN oauth2_registered_client client ON client.id = consent.registered_client_id WHERE consent.principal_name = :ownerId AND client.client_id = :clientId)";
+    }
+
     private String buildBootstrapLockQuery() {
         return "SELECT consumed FROM bootstrapstate WHERE id = 1 FOR UPDATE";
     }

@@ -1,5 +1,12 @@
 <script setup>
-import { t, message, enumLabel, formatNumber } from "../../common/i18n/I18n.js";
+import {
+  t,
+  message,
+  enumLabel,
+  formatNumber,
+  displayValue,
+  fieldLabel,
+} from "../../common/i18n/I18n.js";
 import { useTaskDetail } from "../composables/useTaskDetail.js";
 import ModelVerificationForm from "../../model/components/ModelVerificationForm.vue";
 
@@ -114,6 +121,16 @@ const {
           </ul>
         </div>
       </div>
+      <details
+        v-for="plan in (context.plans || []).filter((item) => item.id !== context.plan?.id)"
+        :key="plan.id"
+        class="card card-body mb-2"
+      >
+        <summary>
+          {{ plan.data.name }} · {{ t("task.version", { version: formatNumber(plan.version) }) }}
+        </summary>
+        <pre class="plan">{{ plan.data.original }}</pre>
+      </details>
       <button
         v-if="canApprove"
         type="button"
@@ -137,7 +154,8 @@ const {
         >
           <div>
             <strong>{{ block.data.name }}</strong>
-            <small>{{ block.id }}</small>
+            <small>{{ displayValue("scope", block.data.scope) }}</small>
+            <small>{{ displayValue("criteria", block.data.criteria) }}</small>
           </div>
           <span class="resource-badge">{{ enumLabel("state", block.data.state) }}</span>
         </li>
@@ -147,6 +165,32 @@ const {
         class="section-hint"
       >
         {{ t("task.noBlocks") }}
+      </p>
+      <h3>{{ t("resource.checkpoints") }}</h3>
+      <p class="section-hint">{{ t("description.checkpoints") }}</p>
+      <details
+        v-for="checkpoint in context.checkpoints || []"
+        :key="checkpoint.id"
+        class="card card-body mb-2"
+      >
+        <summary>
+          {{ checkpoint.data.name }} · {{ enumLabel("state", checkpoint.data.state) }}
+        </summary>
+        <dl class="resource-data">
+          <template
+            v-for="(value, name) in checkpoint.data"
+            :key="name"
+          >
+            <dt>{{ fieldLabel(name) }}</dt>
+            <dd>{{ displayValue(name, value) }}</dd>
+          </template>
+        </dl>
+      </details>
+      <p
+        v-if="!context.checkpoints?.length"
+        class="section-hint"
+      >
+        {{ t("task.noCheckpoints") }}
       </p>
       <ModelVerificationForm
         v-if="verificationModels.length"

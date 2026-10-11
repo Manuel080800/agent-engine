@@ -17,8 +17,8 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/agentengine}
-    username: ${DATABASE_USER:agentengine}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   session:
     jdbc:
@@ -37,9 +37,9 @@ management:
     health:
       show-details: never
 engine:
-  issuer: ${ENGINE_ISSUER:https://localhost:8443/api}
+  issuer: ${ENGINE_ISSUER}
   bootstrap-token: ${BOOTSTRAP_TOKEN:}
-  signing-key: ${SIGNING_KEY_PATH:./secrets/signing.jwk}
+  signing-key: ${SIGNING_KEY_PATH}
   local-client-redirect: ${LOCAL_CLIENT_REDIRECT:http://127.0.0.1:8765/callback}
   authorization-server: true
   route-prefix: /v1

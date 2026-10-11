@@ -10,6 +10,10 @@ export const localClients = {
         name: t("client.local"),
       }),
     }),
+  remove: (record) =>
+    request("/local-clients/" + record.id + "/permanent?version=" + record.version, {
+      method: "DELETE",
+    }),
   revoke: (record) =>
     request("/local-clients/" + record.id + "?version=" + record.version, {
       method: "DELETE",
