@@ -1,0 +1,175 @@
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.project-filter {
+  flex: 0 1 230px;
+}
+
+.search-filter {
+  flex: 1 1 260px;
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #526278;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.list-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 19px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.list-heading h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.list-heading span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.resource-list {
+  overflow: hidden;
+}
+
+.table th {
+  padding: 14px 22px;
+  border-bottom-color: var(--line);
+  background: #f9fbfd;
+  color: #5e7088;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 20px 22px;
+  border-bottom-color: #edf1f6;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.resource-name {
+  min-width: 200px;
+  overflow-wrap: anywhere;
+}
+
+.row-preview {
+  max-width: 340px;
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.resource-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border: 1px solid #e1e8f1;
+  border-radius: 6px;
+  background: #f1f5fa;
+  color: #506583;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.resource-version {
+  font-variant-numeric: tabular-nums;
+}
+
+.row-actions {
+  justify-content: flex-end;
+}
+
+.resource-details {
+  min-width: 150px;
+  max-width: 320px;
+  margin-top: 9px;
+  text-align: right;
+}
+
+.resource-details summary {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.resource-details pre {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.table .empty-state {
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.empty-state strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination-bar span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .project-filter {
+    flex-basis: 100%;
+  }
+  .table td,
+  .table th {
+    padding: 14px;
+  }
+}
+
+.resource-data {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+}
+
+.resource-data dd {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}

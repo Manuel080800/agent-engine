@@ -1,0 +1,12 @@
+.git
+.idea
+.local
+.maven-toolchain
+**/target
+**/node_modules
+**/__pycache__
+coordinator
+plugin
+dist
+.env
+.DS_Store

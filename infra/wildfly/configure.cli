@@ -1,0 +1,6 @@
+embed-server --server-config=standalone.xml --std-out=echo
+/subsystem=elytron/key-store=engineKS:add(path="/opt/jboss/wildfly/standalone/data/agent-engine/secrets/server.p12",type=PKCS12,credential-reference={clear-text="${env.TLS_PASSWORD}"},required=false)
+/subsystem=elytron/key-manager=engineKM:add(key-store=engineKS,credential-reference={clear-text="${env.TLS_PASSWORD}"})
+/subsystem=elytron/server-ssl-context=engineTLS:add(key-manager=engineKM,protocols=["TLSv1.3","TLSv1.2"])
+/subsystem=undertow/server=default-server/https-listener=https:write-attribute(name=ssl-context,value=engineTLS)
+stop-embedded-server

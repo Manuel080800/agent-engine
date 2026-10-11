@@ -1,0 +1,22 @@
+{
+  "name": "agent-engine-webapp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test": "node --test tests/*.test.js",
+    "format": "prettier --write src tests vite.config.js index.html package.json",
+    "format:check": "prettier --check src tests vite.config.js index.html package.json"
+  },
+  "dependencies": {
+    "bootstrap": "5.3.8",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.4",
+    "prettier": "3.6.2",
+    "vite": "7.3.7"
+  }
+}

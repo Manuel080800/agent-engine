@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-engine-local"
+version = "1.0.0rc1"
+description = "Agent Engine durable local coordinator"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+agent-engine-local = "agent_engine_local.transport.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent_engine_local*"]
+

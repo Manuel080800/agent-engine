@@ -1,0 +1,264 @@
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-radius: 8px;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 236px;
+  height: 100dvh;
+  padding: 30px 18px 22px;
+  overflow-y: auto;
+  background: #14253d;
+  color: #d8e3f3;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  color: white;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: white;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  height: 38px;
+  border: 1px solid #5878a5;
+  border-radius: 11px;
+  background: #233c60;
+  font-size: 18px;
+}
+
+.brand small {
+  display: block;
+  margin-top: 5px;
+  color: #acbed7;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.sidebar-navigation {
+  display: grid;
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.navigation-group h2,
+.account-label {
+  margin: 0 0 10px 12px;
+  color: #a6b9d5;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.navigation-group button {
+  display: block;
+  width: 100%;
+  margin-top: 3px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #ccdaed;
+  font-size: 13px;
+  text-align: left;
+}
+
+.navigation-group button:hover {
+  background: #203955;
+  color: white;
+}
+
+.navigation-group button.active {
+  background: #31578a;
+  color: white;
+  box-shadow: inset 3px 0 #9cbdff;
+}
+
+.navigation-group button:disabled,
+.sidebar-logout:disabled {
+  opacity: 0.6;
+}
+
+.sidebar-footer {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+  padding: 28px 12px 0;
+  font-size: 12px;
+}
+
+.sidebar-footer .account-label {
+  margin-left: 0;
+  margin-bottom: 0;
+}
+
+.sidebar-footer p {
+  margin: 0;
+  color: #a6b9d5;
+  line-height: 1.8;
+}
+
+.sidebar-logout {
+  width: fit-content;
+  padding: 8px 0 0;
+  border: 0;
+  background: transparent;
+  color: #c6d7f1;
+  text-align: left;
+}
+
+.main-content {
+  width: 100%;
+  min-width: 0;
+  max-width: 1510px;
+  padding: 44px;
+}
+
+.page-heading,
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.page-heading h1 {
+  margin-bottom: 8px;
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: -1.2px;
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  color: #526b91;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+}
+
+.page-description,
+.section-hint {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.heading-actions,
+.form-actions,
+.row-actions,
+.search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heading-actions,
+.row-actions {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1150px) {
+  .main-content {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 800px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: relative;
+    height: auto;
+    padding: 18px;
+  }
+
+  .sidebar-navigation {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    overflow-x: auto;
+  }
+
+  .navigation-group {
+    flex-shrink: 0;
+  }
+
+  .navigation-group button {
+    display: inline-block;
+    width: auto;
+  }
+
+  .navigation-group h2 {
+    margin-left: 0;
+  }
+
+  .sidebar-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 16px;
+  }
+
+  .sidebar-footer .account-label {
+    display: none;
+  }
+
+  .sidebar-logout {
+    margin-left: auto;
+    padding-top: 0;
+  }
+
+  .main-content {
+    padding: 28px 18px;
+  }
+
+  .page-heading,
+  .section-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .page-heading h1 {
+    font-size: 28px;
+  }
+}

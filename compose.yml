@@ -1,0 +1,39 @@
+services:
+  database:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: agentengine
+      POSTGRES_USER: agentengine
+      POSTGRES_PASSWORD_FILE: /run/secrets/spring.datasource.password
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./.local/secrets/spring.datasource.password:/run/secrets/spring.datasource.password:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U agentengine -d agentengine"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+  wildfly:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://database:5432/agentengine
+      DATABASE_USER: agentengine
+      ENGINE_ISSUER: ${ENGINE_ISSUER:-https://localhost:8443/api}
+    ports: ["127.0.0.1:${HTTPS_PORT:-8443}:8443"]
+    volumes:
+      - wildfly-data:/opt/jboss/wildfly/standalone/data
+      - ./.local/secrets:/run/secrets:ro
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [internal,edge]
+networks:
+  internal:
+    internal: true
+  edge: {}
+volumes:
+  database-data: {}
+  wildfly-data: {}

@@ -1,0 +1,81 @@
+.plan-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  min-width: 0;
+}
+
+.task-objective {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.task-plan-heading {
+  margin-bottom: 12px;
+}
+
+.plan-summary {
+  margin: 6px 0 22px;
+}
+
+.plan-summary ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.task-detail .task-block-heading {
+  margin: 26px 0 14px;
+}
+
+.task-blocks {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.task-blocks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.task-blocks small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.verification-panel {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.verification-panel summary {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.verification-panel > p {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+@media (max-width: 800px) {
+  .plan-summary {
+    grid-template-columns: 1fr;
+  }
+}

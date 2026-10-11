@@ -1,0 +1,106 @@
+.welcome-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(310px, 0.9fr);
+  align-items: start;
+  gap: 48px;
+  padding-top: 28px;
+}
+
+.welcome-heading h1 {
+  margin: 18px 0 20px;
+  font-size: clamp(32px, 3.4vw, 48px);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -1.8px;
+}
+
+.welcome-description {
+  max-width: 390px;
+  margin-bottom: 26px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.welcome-features {
+  display: grid;
+  gap: 22px;
+  margin-top: 44px;
+}
+
+.welcome-features span {
+  margin-right: 12px;
+  color: #5a73a4;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.welcome-features strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.welcome-features p {
+  margin: 7px 0 0 30px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.registration-panel h2 {
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+}
+
+.registration-fields {
+  display: grid;
+  gap: 18px;
+  padding: 0;
+  border: 0;
+}
+
+.registration-panel form {
+  margin-top: 24px;
+}
+
+@media (max-width: 1150px) {
+  .welcome-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .welcome-features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 30px;
+  }
+
+  .welcome-features p {
+    margin-left: 0;
+  }
+
+  .registration-panel {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 800px) {
+  .welcome-layout {
+    padding-top: 0;
+  }
+
+  .welcome-features {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .welcome-heading h1 {
+    font-size: 36px;
+  }
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 480px;
+}

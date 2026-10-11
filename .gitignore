@@ -1,0 +1,16 @@
+.DS_Store
+.idea/
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.agent-engine/
+local-state/
+dist/
+target/
+node_modules/
+.env
+
+.local/
+.maven-toolchain/
