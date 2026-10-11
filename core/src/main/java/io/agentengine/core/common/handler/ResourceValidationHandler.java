@@ -26,7 +26,7 @@ public class ResourceValidationHandler {
         }
 
         if (kind.equals("model-policies")) {
-            if (!Set.of("analyzer", "planner", "executor", "tester", "reviewer", "corrector", "final-reviewer").contains(data.get("role"))) {
+            if (!(data.get("role") instanceof String role) || !Set.of("analyzer", "planner", "executor", "tester", "reviewer", "corrector", "final-reviewer").contains(role)) {
                 throw new IllegalArgumentException("Unknown agent role");
             }
 
@@ -36,8 +36,8 @@ public class ResourceValidationHandler {
         }
 
         if (kind.equals("rules")) {
-            if (!Set.of("user", "personal-project", "global", "repository", "skill", "default").contains(data.get("scope"))) {
-                throw new IllegalArgumentException("Unknown rule scope");
+            if (!(data.get("scope") instanceof String scope) || !Set.of("user", "personal-project", "global", "repository", "skill", "default").contains(scope)) {
+                throw new IllegalArgumentException("Rule scope required: user, personal-project, global, repository, skill or default");
             }
 
             if (!(data.get("text") instanceof String text) || text.isBlank()) {
