@@ -21,6 +21,25 @@ def build(destination):
         plugin / "runtime" / "agent_engine_local",
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
     )
+    # Codex currently loads bundled MCP and hooks from its compatibility layout.
+    manifest = json.loads((plugin / "plugin.json").read_text())
+    manifest.pop("$schema", None)
+    manifest.pop("extensions", None)
+    manifest.update(skills="./skills/", mcpServers="./.mcp.json", hooks="./hooks/hooks.json")
+    compatibility = plugin / ".codex-plugin"
+    compatibility.mkdir(exist_ok=True)
+    (compatibility / "plugin.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    mcp = json.loads((plugin / "mcp.json").read_text())
+    mcp.pop("$schema", None)
+    for server in mcp["mcpServers"].values():
+        if server.get("type") == "streamable-http":
+            server["type"] = "http"
+        # MCP arguments are passed directly, without shell environment expansion.
+        if "args" in server:
+            server["args"] = [argument.replace("${PLUGIN_ROOT}", str(plugin)) for argument in server["args"]]
+    (plugin / ".mcp.json").write_text(json.dumps(mcp, indent=2) + "\n")
+    (plugin / "plugin.json").unlink()
+    (plugin / "mcp.json").unlink()
     catalog = destination / ".agents" / "plugins"
     catalog.mkdir(parents=True)
     (catalog / "marketplace.json").write_text(

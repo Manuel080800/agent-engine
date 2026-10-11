@@ -59,9 +59,9 @@ public class OAuthClientServiceImpl implements OAuthClientService {
         }
 
         var id = "codex-" + UUID.randomUUID();
-        var builder = RegisteredClient.withId(UUID.randomUUID().toString()).clientId(id).clientAuthenticationMethod(ClientAuthenticationMethod.NONE).authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("context:read").scope("knowledge:write").clientSettings(ClientSettings.builder().requireProofKey(true).requireAuthorizationConsent(true).build()).tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(15)).build());
+        var builder = RegisteredClient.withId(UUID.randomUUID().toString()).clientId(id).clientAuthenticationMethod(ClientAuthenticationMethod.NONE).authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN).scope("context:read").scope("knowledge:write").clientSettings(ClientSettings.builder().requireProofKey(true).requireAuthorizationConsent(true).build()).tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(15)).refreshTokenTimeToLive(Duration.ofDays(7)).reuseRefreshTokens(false).build());
         registration.redirect_uris().forEach(builder::redirectUri);
         clients.save(builder.build());
-        return Map.of("client_id", id, "redirect_uris", registration.redirect_uris(), "token_endpoint_auth_method", "none", "grant_types", List.of("authorization_code"), "response_types", List.of("code"), "scope", "context:read knowledge:write");
+        return Map.of("client_id", id, "redirect_uris", registration.redirect_uris(), "token_endpoint_auth_method", "none", "grant_types", List.of("authorization_code", "refresh_token"), "response_types", List.of("code"), "scope", "context:read knowledge:write");
     }
 }

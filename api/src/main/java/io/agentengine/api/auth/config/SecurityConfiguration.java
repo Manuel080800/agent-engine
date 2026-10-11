@@ -66,7 +66,7 @@ public class SecurityConfiguration {
                 return null;
             }
 
-            if (context.getRegisteredClient().getClientAuthenticationMethods().contains(ClientAuthenticationMethod.NONE) && !context.getRegisteredClient().getClientId().equals("agent-engine-local")) {
+            if (!context.getRegisteredClient().getAuthorizationGrantTypes().contains(AuthorizationGrantType.REFRESH_TOKEN)) {
                 return null;
             }
 
@@ -92,11 +92,11 @@ public class SecurityConfiguration {
     SecurityFilterChain oauth(HttpSecurity http, LocalClientAuthenticationService localClients, @Value("${engine.issuer}") String issuer, TokenRefreshService refreshService) throws Exception {
         var config = OAuth2AuthorizationServerConfigurer.authorizationServer();
         http.securityMatcher(config.getEndpointsMatcher()).with(config, server -> server.clientAuthentication(client -> client.authenticationConverter(request -> {
-            if (!"refresh_token".equals(request.getParameter("grant_type")) || !"agent-engine-local".equals(request.getParameter("client_id"))) {
+            if (!"refresh_token".equals(request.getParameter("grant_type")) || Objects.isNull(request.getParameter("client_id")) || Objects.nonNull(request.getParameter("client_secret")) || Objects.nonNull(request.getHeader("Authorization"))) {
                 return null;
             }
 
-            return new OAuth2ClientAuthenticationToken("agent-engine-local", ClientAuthenticationMethod.NONE, null, Map.of("grant_type", "refresh_token"));
+            return new OAuth2ClientAuthenticationToken(request.getParameter("client_id"), ClientAuthenticationMethod.NONE, null, Map.of("grant_type", "refresh_token"));
         }).authenticationProvider(new LocalClientAuthenticationHandler(localClients))).authorizationServerMetadataEndpoint(metadata -> metadata.authorizationServerMetadataCustomizer(builder -> builder.claim("registration_endpoint", issuer + "/oauth/register"))).oidc(Customizer.withDefaults())).authorizeHttpRequests(a -> a.anyRequest().authenticated()).exceptionHandling(e -> e.defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/login"), new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
         http.addFilterBefore(new RefreshSerializationFilter(refreshService), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
         return http.build();
